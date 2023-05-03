@@ -93,13 +93,11 @@ class PasskitModule(
 
     @ReactMethod
     fun addPass(base64encodedPass: String, promise: Promise){
-      val pass = Base64.decode(base64encodedPass, Base64.DEFAULT).toString()
-
         reactContext.currentActivity?.let {
-            walletClient?.savePasses(pass, it, addToGoogleWalletRequestCode)
-//            walletClient?.savePassesJwt()
-            promise.resolve(true)
-            return
+          val pass = Base64.decode(base64encodedPass, Base64.DEFAULT).toString()
+          walletClient?.savePasses(pass, it, addToGoogleWalletRequestCode)
+          promise.resolve(true)
+          return
         }
         promise.resolve(false)
     }
