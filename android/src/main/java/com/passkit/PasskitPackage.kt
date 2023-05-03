@@ -12,6 +12,6 @@ class PasskitPackage : ReactPackage {
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return emptyList()
+    return listOf(AddPassButtonManager(reactContext))
   }
 }

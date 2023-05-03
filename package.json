@@ -1,7 +1,7 @@
 {
-  "name": "react-native-passkit",
+  "name": "@reeq/react-native-passkit",
   "version": "0.1.0",
-  "description": "test",
+  "description": "React native wrapper over google PayClient (for android) and PassKit (for iOS). Contains google and apple buttons",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -39,7 +39,10 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "passkit",
+    "google-pay",
+    "wallet"
   ],
   "repository": "https://github.com/reeq-dev/react-native-passkit",
   "author": "Ganas Alexander <nooolie@gmail.com> (https://github.com/reeq-dev)",

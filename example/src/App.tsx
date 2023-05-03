@@ -1,18 +1,68 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-passkit';
+import {
+  AddPassButton,
+  addPass,
+  addPassResultListener,
+  canAddPasses,
+  containsPass,
+} from '@reeq/react-native-passkit';
+import { Platform, StyleSheet, View } from 'react-native';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+  useEffect(() => {
+    const unsubscribe = addPassResultListener((event) => {
+      console.log(event);
+    });
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  const handleAddPassButton = async () => {
+    try {
+      const pass = 'BASE_64_ENCODED_STRING';
+
+      const isAddable = await canAddPasses();
+
+      if (!isAddable) {
+        return;
+      }
+
+      const hasPassAlready = await containsPass(pass);
+
+      if (hasPassAlready) {
+        return;
+      }
+
+      await addPass(pass);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <View style={[styles.box, styles.lightBox]}>
+        <AddPassButton onPress={handleAddPassButton} />
+      </View>
+      <View style={[styles.box, styles.darkBox]}>
+        <AddPassButton
+          variant={{
+            android: 'light',
+            ios: 'dark-outline',
+          }}
+          onPress={handleAddPassButton}
+        />
+      </View>
+      {Platform.OS === 'android' && (
+        <View style={[styles.box, styles.lightBox]}>
+          <AddPassButton
+            variant={{ android: 'light-outline' }}
+            onPress={handleAddPassButton}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -20,12 +70,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  box: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  lightBox: {
+    backgroundColor: '#e6e6e6',
+  },
+  darkBox: {
+    backgroundColor: '#252525',
   },
 });
