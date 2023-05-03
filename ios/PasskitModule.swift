@@ -103,5 +103,6 @@ extension PasskitModule: PKAddPassesViewControllerDelegate {
         
         pass = nil
         
+        controller.dismiss(animated: true, completion: nil)
     }
 }

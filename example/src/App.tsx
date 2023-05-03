@@ -8,6 +8,7 @@ import {
   containsPass,
 } from '@reeq/react-native-passkit';
 import { Platform, StyleSheet, View } from 'react-native';
+import { testPass } from '../test-pass';
 
 export default function App() {
   useEffect(() => {
@@ -21,21 +22,21 @@ export default function App() {
 
   const handleAddPassButton = async () => {
     try {
-      const pass = 'BASE_64_ENCODED_STRING';
-
       const isAddable = await canAddPasses();
 
       if (!isAddable) {
+        console.log("[can't add passes]", isAddable);
         return;
       }
 
-      const hasPassAlready = await containsPass(pass);
+      const hasPassAlready = await containsPass(testPass);
 
       if (hasPassAlready) {
+        console.log('[has pass already]', hasPassAlready);
         return;
       }
 
-      await addPass(pass);
+      await addPass(testPass);
     } catch (err) {
       console.log(err);
     }
