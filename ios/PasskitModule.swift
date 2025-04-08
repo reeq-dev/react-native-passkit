@@ -54,6 +54,27 @@ class PasskitModule: RCTEventEmitter {
             
         }
     }
+    
+    
+    func getTopViewController(_ rootViewController: UIViewController? = UIApplication.shared.connectedScenes
+        .compactMap { $0 as? UIWindowScene }
+        .flatMap { $0.windows }
+        .first(where: { $0.isKeyWindow })?.rootViewController) -> UIViewController? {
+
+        if let nav = rootViewController as? UINavigationController {
+            return getTopViewController(nav.visibleViewController)
+        }
+
+        if let tab = rootViewController as? UITabBarController {
+            return getTopViewController(tab.selectedViewController)
+        }
+
+        if let presented = rootViewController?.presentedViewController {
+            return getTopViewController(presented)
+        }
+
+        return rootViewController
+    }
         
     
     @objc(addPass:resolver:rejecter:)
@@ -73,14 +94,24 @@ class PasskitModule: RCTEventEmitter {
                         return
                     }
                     
-                    guard let addPassesVC = PKAddPassesViewController(pass: self.pass!), let rootVC = UIApplication.shared.windows.first?.rootViewController else {
-                        reject("", "Can not add pass, find root vc or PKAddPassesViewController is not supported", nil)
+                    guard let addPassesVC = PKAddPassesViewController(pass: self.pass!) else {
+                        reject("vc_error", "Cannot create PKAddPassesViewController", nil)
+                        return
+                    }
+
+                    guard let topVC = self.getTopViewController() else {
+                        reject("window_error", "Cannot find top view controller", nil)
+                        return
+                    }
+                    
+                    if topVC.presentedViewController != nil {
+                        reject("presentation_error", "A view controller is already being presented", nil)
                         return
                     }
 
                     addPassesVC.delegate = self
                     
-                    rootVC.present(addPassesVC, animated: true, completion: {() in
+                    topVC.present(addPassesVC, animated: true, completion: {() in
                         resolve(nil)
                     })
                     return
