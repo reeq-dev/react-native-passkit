@@ -1,6 +1,6 @@
 {
   "name": "@reeq/react-native-passkit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "React native wrapper over google PayClient (for android) and PassKit (for iOS). Contains google and apple buttons",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
