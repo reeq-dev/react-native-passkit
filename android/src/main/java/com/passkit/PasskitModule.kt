@@ -19,7 +19,7 @@ class PasskitModule(
     override fun getName() = "PasskitModule"
 
     private val activityEventListener = object : BaseActivityEventListener() {
-      override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, intent: Intent?) {
+      override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == addToGoogleWalletRequestCode) {
           when (resultCode) {
             Activity.RESULT_OK -> {
@@ -34,7 +34,7 @@ class PasskitModule(
               })
             }
 
-            PayClient.SavePassesResult.SAVE_ERROR -> intent?.let { intentData ->
+            PayClient.SavePassesResult.SAVE_ERROR -> data?.let { intentData ->
               val errorMessage = intentData.getStringExtra(PayClient.EXTRA_API_ERROR_MESSAGE)
 
               sendReactEvent(reactContext, "addPassResult", Arguments.createMap().apply {
