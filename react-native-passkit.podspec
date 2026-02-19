@@ -22,12 +22,18 @@ Pod::Spec.new do |s|
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
     s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
     s.pod_target_xcconfig    = {
-        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/ReactNativeDependencies\"",
         "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
         "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
     }
     s.dependency "React-Codegen"
-    s.dependency "RCT-Folly"
+    # When RCT_USE_RN_DEP=1 (Expo/default) React Native uses prebuilt deps and does not add
+    # RCT-Folly to Podfile. Use ReactNativeDependencies instead so pod install succeeds.
+    if ENV['RCT_USE_RN_DEP'] == '1'
+      s.dependency "ReactNativeDependencies"
+    else
+      s.dependency "RCT-Folly"
+    end
     s.dependency "RCTRequired"
     s.dependency "RCTTypeSafety"
     s.dependency "ReactCommon/turbomodule/core"
