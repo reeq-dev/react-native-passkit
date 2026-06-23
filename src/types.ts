@@ -1,13 +1,7 @@
 import type { ViewProps } from 'react-native';
 
-type AndroidVariant = 'dark' | 'light' | 'light-outline';
-type iOSVariant = 'dark' | 'dark-outline';
-
-export interface AddPassButtonNativeProps {
-  variant?: AndroidVariant | iOSVariant;
-
-  onAddButtonPress?: () => void;
-}
+export type AndroidVariant = 'dark' | 'light' | 'light-outline';
+export type IOSVariant = 'dark' | 'dark-outline';
 
 export interface AddPassButtonProps extends ViewProps {
   /**
@@ -15,7 +9,7 @@ export interface AddPassButtonProps extends ViewProps {
    * android: 'dark' | 'light' | 'light-outline'
    */
   variant?: {
-    ios?: iOSVariant;
+    ios?: IOSVariant;
     android?: AndroidVariant;
   };
   onPress?: () => void;

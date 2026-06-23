@@ -1,5 +1,3 @@
-import React, { useEffect } from 'react';
-
 import {
   AddPassButton,
   addPass,
@@ -7,62 +5,60 @@ import {
   canAddPasses,
   containsPass,
 } from '@reeq/react-native-passkit';
-import { Platform, StyleSheet, View } from 'react-native';
-// import { testPass } from '../test-pass';
+import { useEffect } from 'react';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
+// import { iOSPass } from './test-pass-ios';
+// import { androidPass } from './test-pass-android';
 
 export default function App() {
   useEffect(() => {
     const unsubscribe = addPassResultListener((event) => {
-      console.log(event);
+      Alert.alert('Pass result listener', JSON.stringify(event));
     });
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
-  const handleAddPassButton = async () => {
+  const handleAddPass = async () => {
     try {
-      const testPass = 'YOUR_BASE_64_ENCODED_PASS';
+      // Replace with a real base64 encoded pass (iOS .pkpass / Android Wallet JSON).
+      const pass = 'YOUR_BASE64_PASS';
+      // const pass = androidPass;
+      // const pass = iOSPass;
 
       const isAddable = await canAddPasses();
-
       if (!isAddable) {
-        console.log("[can't add passes]", isAddable);
+        console.error("[can't add passes]");
         return;
       }
 
-      const hasPassAlready = await containsPass(testPass);
-
+      const hasPassAlready = await containsPass(pass);
       if (hasPassAlready) {
-        console.log('[has pass already]', hasPassAlready);
+        console.error('[has pass already]');
         return;
       }
 
-      await addPass(testPass);
+      await addPass(pass);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
   return (
     <View style={styles.container}>
       <View style={[styles.box, styles.lightBox]}>
-        <AddPassButton onPress={handleAddPassButton} />
+        <AddPassButton onPress={handleAddPass} />
       </View>
       <View style={[styles.box, styles.darkBox]}>
         <AddPassButton
-          variant={{
-            android: 'light',
-            ios: 'dark-outline',
-          }}
-          onPress={handleAddPassButton}
+          variant={{ android: 'light', ios: 'dark-outline' }}
+          onPress={handleAddPass}
         />
       </View>
       {Platform.OS === 'android' && (
         <View style={[styles.box, styles.lightBox]}>
           <AddPassButton
             variant={{ android: 'light-outline' }}
-            onPress={handleAddPassButton}
+            onPress={handleAddPass}
           />
         </View>
       )}
