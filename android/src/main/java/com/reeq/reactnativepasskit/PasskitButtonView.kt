@@ -32,7 +32,7 @@ class PasskitButtonView(context: ReactContext) : FrameLayout(context) {
   private fun emitOnPress() {
     val reactContext = context as ReactContext
     val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
-    val dispatcher = UIManagerHelper.getEventDispatcher(reactContext)
+    val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
     dispatcher?.dispatchEvent(OnAddButtonPressEvent(surfaceId, id))
   }
 
