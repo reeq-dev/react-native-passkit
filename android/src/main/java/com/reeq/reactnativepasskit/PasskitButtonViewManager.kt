@@ -24,7 +24,7 @@ class PasskitButtonViewManager :
 
   @ReactProp(name = "variant")
   override fun setVariant(view: PasskitButtonView, value: String?) {
-    view.setVariant(value ?: "dark")
+    view.setVariant(value)
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =

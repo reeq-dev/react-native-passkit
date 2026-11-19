@@ -1747,7 +1747,7 @@ PODS:
     - React-utils (= 0.85.0)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.85.0)
-  - ReactNativePasskit (1.0.0):
+  - ReactNativePasskit (0.2.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2072,7 +2072,7 @@ SPEC CHECKSUMS:
   ReactCodegen: b3184a229afd01e7f8058dd81b805b843caa2bf9
   ReactCommon: fe2a3af8975e63efa60f95fca8c34dc85deee360
   ReactNativeDependencies: fa413ae22c75554db0234f74f3695c7919d86fae
-  ReactNativePasskit: 113a95569e2c919bda48e6382247709af3e2df3d
+  ReactNativePasskit: b2860aa5af23e6978b0cf696595fc30033058349
   Yoga: e83c3121d079541e69f3c5c623faaaf933fb5812
 
 PODFILE CHECKSUM: 8a554c4b8b573f09cf8061c0c5fd3197842f1f33

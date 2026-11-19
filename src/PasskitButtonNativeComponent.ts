@@ -7,10 +7,10 @@ import {
 
 export interface NativeProps extends ViewProps {
   /**
-   * iOS: 'dark' | 'dark-outline'
-   * Android: 'dark' | 'light' | 'light-outline'
+   * iOS: 'dark' | 'dark-outline' (anything else renders 'dark')
+   * Android: 'primary' | 'condensed' (anything else renders 'primary')
    */
-  variant?: CodegenTypes.WithDefault<string, 'dark'>;
+  variant?: string;
   onAddButtonPress?: CodegenTypes.DirectEventHandler<Readonly<{}>> | null;
 }
 
