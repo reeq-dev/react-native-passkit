@@ -10,8 +10,8 @@ Rejected promises carry a `code`:
 | Code | Platform | When |
 | --- | --- | --- |
 | `decode_error` | iOS, Android | The base64 string can't be decoded |
-| `pass_error` | iOS, Android | iOS: the data is not a valid `.pkpass`. Both: `addPasses` received an empty array. Android: `addPasses` received more than one entry |
-| `presentation_error` | iOS | An add-pass sheet or a view controller transition is already in progress |
+| `pass_error` | iOS, Android | The data is not a valid `.pkpass` (iOS) or Google Wallet JSON object (Android). `addPasses` received an empty array. Android: `addPasses` received more than one entry |
+| `presentation_error` | iOS, Android | An add-pass sheet (iOS) or Google Wallet save flow (Android) is already open, or a view controller transition is in progress (iOS) |
 | `window_error` | iOS | No key window or top view controller to present from |
 | `vc_error` | iOS | `PKAddPassesViewController` couldn't be created |
 | `pass_not_found` | iOS | `removePass` / `openPass`: no accessible pass with that ID and serial |

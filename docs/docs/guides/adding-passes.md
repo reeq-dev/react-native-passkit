@@ -17,6 +17,10 @@ const canAddJwt = await canAddPasses('jwt'); // Android: checks the JWT API
 - **iOS** returns `PKAddPassesViewController.canAddPasses()`. The `format` argument is ignored.
 - **Android** asks Google Play services whether the save API for that payload format is available to this user and device. If you add passes with `addPassJWT`, check `'jwt'`.
 
+:::note
+On Android, `canAddPasses` can return `true` on a device with no Google account signed in. In that case Google Wallet closes immediately and the [result event](./events.md) reports `cancelled`.
+:::
+
 ## Add a single pass
 
 ```ts

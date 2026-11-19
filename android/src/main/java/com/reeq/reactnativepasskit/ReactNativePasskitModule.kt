@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Base64
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BaseActivityEventListener
+import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
@@ -13,11 +14,19 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.google.android.gms.pay.Pay
 import com.google.android.gms.pay.PayApiAvailabilityStatus
 import com.google.android.gms.pay.PayClient
+import org.json.JSONException
+import org.json.JSONObject
 
 class ReactNativePasskitModule(private val reactContext: ReactApplicationContext) :
-  NativeReactNativePasskitSpec(reactContext) {
+  NativeReactNativePasskitSpec(reactContext), LifecycleEventListener {
 
   private var listenerCount = 0
+
+  /**
+   * True while a Google Wallet save flow we started is on screen. Mirrors the
+   * iOS guard so a second call rejects instead of stacking another flow.
+   */
+  private var saveInProgress = false
 
   /**
    * Created lazily so the module works before the first `onHostResume`. The
@@ -35,6 +44,7 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
         data: Intent?,
       ) {
         if (requestCode != ADD_TO_GOOGLE_WALLET_REQUEST_CODE) return
+        saveInProgress = false
 
         val event = Arguments.createMap()
         when (resultCode) {
@@ -71,12 +81,25 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
 
   init {
     reactContext.addActivityEventListener(activityEventListener)
+    reactContext.addLifecycleEventListener(this)
   }
 
   override fun invalidate() {
     reactContext.removeActivityEventListener(activityEventListener)
+    reactContext.removeLifecycleEventListener(this)
     super.invalidate()
   }
+
+  // Our Activity is paused while Google Wallet is on top and its result is
+  // delivered before onResume. Reaching onResume with the flag still set means
+  // the result was lost (e.g. the Activity was recreated), so don't stay stuck.
+  override fun onHostResume() {
+    saveInProgress = false
+  }
+
+  override fun onHostPause() {}
+
+  override fun onHostDestroy() {}
 
   // ---- Cross-platform ----
 
@@ -98,12 +121,6 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
   }
 
   override fun addPass(base64EncodedPass: String, promise: Promise) {
-    val activity = reactContext.currentActivity
-    if (activity == null) {
-      promise.reject(E_NO_ACTIVITY, "No current Activity to present Google Wallet from")
-      return
-    }
-
     val pass =
       try {
         Base64.decode(base64EncodedPass, Base64.DEFAULT).toString(Charsets.UTF_8)
@@ -112,11 +129,17 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
         return
       }
 
+    // Fail fast like iOS does for an invalid .pkpass, instead of launching
+    // Google Wallet with a payload it can only reject.
     try {
+      JSONObject(pass)
+    } catch (e: JSONException) {
+      promise.reject(E_PASS, "Can not read pass, expected a Google Wallet JSON payload", e)
+      return
+    }
+
+    launchSave(promise) { activity ->
       walletClient.savePasses(pass, activity, ADD_TO_GOOGLE_WALLET_REQUEST_CODE)
-      promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject(E_SAVE, e.message ?: "Can not save the pass", e)
     }
   }
 
@@ -134,16 +157,29 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
   }
 
   override fun addPassJWT(passJWT: String, promise: Promise) {
+    launchSave(promise) { activity ->
+      walletClient.savePassesJwt(passJWT, activity, ADD_TO_GOOGLE_WALLET_REQUEST_CODE)
+    }
+  }
+
+  /** Starts a Google Wallet save flow from the current Activity. */
+  private fun launchSave(promise: Promise, launch: (Activity) -> Unit) {
     val activity = reactContext.currentActivity
     if (activity == null) {
       promise.reject(E_NO_ACTIVITY, "No current Activity to present Google Wallet from")
       return
     }
+    if (saveInProgress) {
+      promise.reject(E_PRESENTATION, "A Google Wallet save flow is already open")
+      return
+    }
 
     try {
-      walletClient.savePassesJwt(passJWT, activity, ADD_TO_GOOGLE_WALLET_REQUEST_CODE)
+      saveInProgress = true
+      launch(activity)
       promise.resolve(null)
     } catch (e: Exception) {
+      saveInProgress = false
       promise.reject(E_SAVE, e.message ?: "Can not save the pass", e)
     }
   }
@@ -236,6 +272,7 @@ class ReactNativePasskitModule(private val reactContext: ReactApplicationContext
     private const val E_DECODE = "decode_error"
     private const val E_PASS = "pass_error"
     private const val E_SAVE = "save_error"
+    private const val E_PRESENTATION = "presentation_error"
     private const val E_UNSUPPORTED_PLATFORM = "E_UNSUPPORTED_PLATFORM"
   }
 }
