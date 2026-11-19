@@ -14,6 +14,8 @@ All additions are backwards compatible. Changes in behaviour you might notice:
 - **Android `canAddPasses()` no longer returns `false` before the first `onResume`.** The Google Wallet client is now created lazily.
 - **Android add-pass result events can report two new error types**: `unavailable` (`API_UNAVAILABLE`) and `internal` (`INTERNAL_ERROR`). Before, both were reported as `unexpected`. If you exhaustively `switch` over `AddPassResultErrorType`, add the two cases.
 
+- **The Android button is now Google's "Add to Google Wallet" button**, replacing the retired "Save to Google Pay" artwork. Google only allows the black button, in a `primary` or `condensed` style. The old `dark`, `light` and `light-outline` variants still work, but they render `primary` and log a warning in development. The default Android height changed from 44 to 48, to match Google's layout.
+
 New APIs: `addPasses`, `canAddPasses(format)`, `getWalletName`, `isPassLibraryAvailable`, `getPasses`, `getPass`, `getPassFieldValue`, `replacePass`, `removePass`, `openPass` and `passLibraryChangedListener`.
 
 ## 0.1.x → 0.2.0

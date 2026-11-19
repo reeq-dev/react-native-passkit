@@ -1,32 +1,63 @@
 package com.reeq.reactnativepasskit
 
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageView
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 
+/**
+ * Official "Add to Google Wallet" button.
+ *
+ * The layouts and localized drawables come unchanged from Google's Android
+ * button assets (https://developers.google.com/wallet/generic/resources/brand-guidelines),
+ * with resource names prefixed by `rnpk_` so they can't clash with an app that
+ * also bundles them. Google only allows the black button, in two styles:
+ * - `primary`: "Add to Google Wallet" on one line.
+ * - `condensed`: two lines, for narrow layouts.
+ */
 class PasskitButtonView(context: ReactContext) : FrameLayout(context) {
-  private val imageButton = ImageView(context)
+  private var currentLayout = 0
+  private var button: View? = null
 
   init {
-    imageButton.layoutParams =
-      LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    imageButton.setOnClickListener { emitOnPress() }
-    addView(imageButton)
-    setVariant("dark")
+    setVariant(null)
   }
 
   fun setVariant(variant: String?) {
-    val resId =
-      when (variant) {
-        "light" -> R.drawable.save_to_google_pay_light
-        "light-outline" -> R.drawable.save_to_google_pay_light_with_stroke
-        else -> R.drawable.save_to_google_pay_dark
+    val layout =
+      if (variant == VARIANT_CONDENSED) R.layout.rnpk_googlewallet_badge
+      else R.layout.rnpk_googlewallet_button
+    if (layout == currentLayout) return
+    currentLayout = layout
+
+    button?.let { removeView(it) }
+    button =
+      LayoutInflater.from(context).inflate(layout, this, false).also {
+        // React Native controls the size; fill whatever bounds we get.
+        it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        it.setOnClickListener { emitOnPress() }
+        addView(it)
       }
-    imageButton.setImageResource(resId)
+  }
+
+  // React Native swallows requestLayout() from native children, so a child
+  // added after mount (variant change) would never be measured. Lay it out here.
+  private val measureAndLayout = Runnable {
+    measure(
+      MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY),
+    )
+    layout(left, top, right, bottom)
+  }
+
+  override fun requestLayout() {
+    super.requestLayout()
+    @Suppress("SENSELESS_COMPARISON") // called from the super constructor
+    if (measureAndLayout != null) post(measureAndLayout)
   }
 
   private fun emitOnPress() {
@@ -45,5 +76,9 @@ class PasskitButtonView(context: ReactContext) : FrameLayout(context) {
     companion object {
       const val EVENT_NAME = "topAddButtonPress"
     }
+  }
+
+  companion object {
+    private const val VARIANT_CONDENSED = "condensed"
   }
 }

@@ -1,12 +1,28 @@
 import type { ViewProps } from 'react-native';
 
-export type AndroidVariant = 'dark' | 'light' | 'light-outline';
+/**
+ * Google only allows the black "Add to Google Wallet" button, in two styles:
+ * - `primary`: one line, "Add to Google Wallet".
+ * - `condensed`: two lines, for narrow layouts.
+ *
+ * `dark`, `light` and `light-outline` are the old "Save to Google Pay" styles.
+ * They still work but render `primary`.
+ */
+export type AndroidVariant =
+  | 'primary'
+  | 'condensed'
+  /** @deprecated Renders `primary`. */
+  | 'dark'
+  /** @deprecated Google Wallet has no light button. Renders `primary`. */
+  | 'light'
+  /** @deprecated Google Wallet has no light button. Renders `primary`. */
+  | 'light-outline';
 export type IOSVariant = 'dark' | 'dark-outline';
 
 export interface AddPassButtonProps extends ViewProps {
   /**
-   * ios: 'dark' | 'dark-outline'
-   * android: 'dark' | 'light' | 'light-outline'
+   * ios: 'dark' | 'dark-outline' (default 'dark')
+   * android: 'primary' | 'condensed' (default 'primary')
    */
   variant?: {
     ios?: IOSVariant;

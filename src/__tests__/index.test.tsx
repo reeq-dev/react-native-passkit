@@ -121,3 +121,26 @@ describe('Android fallbacks', () => {
     expect(mockNative.addListener).not.toHaveBeenCalled();
   });
 });
+
+describe('resolveAndroidVariant', () => {
+  const { resolveAndroidVariant } = require('../buttonVariant');
+
+  it('defaults to the primary Google Wallet button', () => {
+    expect(resolveAndroidVariant(undefined)).toBe('primary');
+    expect(resolveAndroidVariant('primary')).toBe('primary');
+  });
+
+  it('passes condensed through', () => {
+    expect(resolveAndroidVariant('condensed')).toBe('condensed');
+  });
+
+  it('maps legacy Google Pay variants to primary and warns once each', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(resolveAndroidVariant('light')).toBe('primary');
+    expect(resolveAndroidVariant('light')).toBe('primary');
+    expect(resolveAndroidVariant('light-outline')).toBe('primary');
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(String(warn.mock.calls[0]![0])).toContain("'light' is deprecated");
+    warn.mockRestore();
+  });
+});

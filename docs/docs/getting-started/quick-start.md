@@ -39,7 +39,7 @@ export function TicketScreen({ pass }: { pass: string }) {
 
   return (
     <AddPassButton
-      variant={{ ios: 'dark-outline', android: 'dark' }}
+      variant={{ ios: 'dark-outline', android: 'primary' }}
       onPress={handleAddPass}
     />
   );

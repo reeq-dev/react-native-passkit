@@ -5,6 +5,7 @@ import ReactNativePasskit, {
   type NativePassRelevantDate,
 } from './NativeReactNativePasskit';
 import PasskitButton from './PasskitButtonNativeComponent';
+import { resolveAndroidVariant } from './buttonVariant';
 import type {
   AddPassButtonProps,
   AddPassResultEvent,
@@ -221,29 +222,40 @@ export function AddPassButton({
   style,
   ...props
 }: AddPassButtonProps) {
+  const android = resolveAndroidVariant(variant?.android);
   return (
     <PasskitButton
-      style={[styles.passButton, style]}
+      style={[
+        Platform.OS === 'android' && android === 'condensed'
+          ? styles.condensedButton
+          : styles.passButton,
+        style,
+      ]}
       {...props}
       onAddButtonPress={onPress ? () => onPress() : undefined}
       variant={Platform.select({
         ios: variant?.ios,
-        android: variant?.android,
+        android,
       })}
     />
   );
 }
 
 const styles = StyleSheet.create({
+  // Google's layouts are 48 (primary) and 53 (condensed) high.
   passButton: {
     height: Platform.select({
-      android: 44,
+      android: 48,
       ios: 60,
     }),
     width: Platform.select({
       android: 288,
       ios: 260,
     }),
+  },
+  condensedButton: {
+    height: 53,
+    width: 200,
   },
 });
 

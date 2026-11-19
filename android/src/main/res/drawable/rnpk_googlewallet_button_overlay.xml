@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- From Google Wallet "Add to Google Wallet" Android assets (renamed with rnpk_ prefix). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_enabled="false">
+    <shape android:shape="rectangle">
+      <corners android:radius="4dp" />
+      <solid android:color="#7FFFFFFF" />
+    </shape>
+  </item>
+  <item android:drawable="@android:color/transparent" />
+</selector>

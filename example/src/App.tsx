@@ -88,14 +88,14 @@ export default function App() {
       </View>
       <View style={[styles.box, styles.darkBox]}>
         <AddPassButton
-          variant={{ android: 'light', ios: 'dark-outline' }}
+          variant={{ android: 'primary', ios: 'dark-outline' }}
           onPress={handleAddPass}
         />
       </View>
       {Platform.OS === 'android' && (
         <View style={[styles.box, styles.lightBox]}>
           <AddPassButton
-            variant={{ android: 'light-outline' }}
+            variant={{ android: 'condensed' }}
             onPress={handleAddPass}
           />
         </View>

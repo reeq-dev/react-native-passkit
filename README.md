@@ -35,7 +35,7 @@ const handleAddPass = async () => {
 };
 
 <AddPassButton
-  variant={{ ios: 'dark-outline', android: 'dark' }}
+  variant={{ ios: 'dark-outline', android: 'primary' }}
   onPress={handleAddPass}
 />;
 ```
