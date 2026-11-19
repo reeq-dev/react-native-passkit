@@ -59,7 +59,7 @@
   "bugs": {
     "url": "https://github.com/reeq-dev/react-native-passkit/issues"
   },
-  "homepage": "https://github.com/reeq-dev/react-native-passkit#readme",
+  "homepage": "https://reeq-dev.github.io/react-native-passkit/",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
