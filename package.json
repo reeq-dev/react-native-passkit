@@ -1,6 +1,6 @@
 {
   "name": "@reeq/react-native-passkit",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "React native wrapper over Google Wallet (PayClient) and Apple PassKit. Includes the Add to Apple Wallet and Add to Google Wallet buttons.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
